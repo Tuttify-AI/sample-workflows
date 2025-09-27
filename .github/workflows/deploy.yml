@@ -20,6 +20,20 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           export_default_credentials: true
 
+      - name: Validate service account key and activate
+        run: |
+          # ensure the file path was exported
+          if [ -z "${GOOGLE_APPLICATION_CREDENTIALS:-}" ]; then
+            echo "GOOGLE_APPLICATION_CREDENTIALS not set; setup-gcloud may have failed" >&2
+            exit 1
+          fi
+          echo "Validating SA JSON at $GOOGLE_APPLICATION_CREDENTIALS"
+          # validate JSON without printing secrets
+          python -c 'import json,sys; json.load(open(sys.argv[1])); print("SA JSON OK")' "$GOOGLE_APPLICATION_CREDENTIALS"
+          # explicitly activate the service account to create ADC
+          gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
+          gcloud auth list
+
       - name: Configure kubectl
         uses: google-github-actions/get-gke-credentials@v1
         with:
