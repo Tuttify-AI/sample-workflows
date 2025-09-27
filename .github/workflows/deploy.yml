@@ -30,8 +30,8 @@ jobs:
           chmod 600 "${HOME}/.gcloud/key.json"
           # export for subsequent steps
           echo "GOOGLE_APPLICATION_CREDENTIALS=${HOME}/.gcloud/key.json" >> $GITHUB_ENV
-          # validate JSON without printing secrets
-          python -c 'import json,sys; json.load(open(sys.argv[1])); print("SA JSON OK")' "${HOME}/.gcloud/key.json"
+          # validate JSON without printing secrets (requires jq on runner)
+          jq -e . "${HOME}/.gcloud/key.json" > /dev/null && echo "SA JSON OK" || (echo "SA JSON invalid" >&2; exit 1)
           # explicitly activate the service account to create ADC
           gcloud auth activate-service-account --key-file="${HOME}/.gcloud/key.json"
           gcloud auth list
