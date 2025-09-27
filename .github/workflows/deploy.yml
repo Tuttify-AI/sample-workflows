@@ -23,6 +23,8 @@ jobs:
       - name: Configure kubectl
         uses: google-github-actions/get-gke-credentials@v1
         with:
+          # pass the SA key directly to ensure credentials are available
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
           cluster_name: ${{ secrets.GKE_CLUSTER }}
           location: ${{ secrets.GKE_REGION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
