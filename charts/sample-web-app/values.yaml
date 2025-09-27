@@ -21,3 +21,7 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+env:
+  NODE_ENV: stage
+  PORT: "3000"
