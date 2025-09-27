@@ -1,0 +1,17 @@
+{
+  "name": "sample-web-app",
+  "version": "1.0.0",
+  "description": "A sample web application deployed on GKE using Helm.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

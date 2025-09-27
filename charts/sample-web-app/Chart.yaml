@@ -1,0 +1,15 @@
+name: sample-web-app
+version: 0.1.0
+description: A sample web application deployed on Google Kubernetes Engine using Helm.
+type: application
+keywords:
+  - web
+  - application
+  - helm
+  - kubernetes
+maintainers:
+  - name: Your Name
+    email: your.email@example.com
+sources:
+  - https://github.com/tuttify-ai/sample-workflows
+icon: https://example.com/icon.png

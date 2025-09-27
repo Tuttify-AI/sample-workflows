@@ -1,0 +1,23 @@
+image:
+  repository: your-docker-repo/sample-web-app
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - /
+
+resources: {}
+  
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
