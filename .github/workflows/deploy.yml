@@ -63,8 +63,13 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           IMAGE="${IMAGE_REPO}:${IMAGE_TAG}"
-          echo "Building ${IMAGE}"
-          docker build -t "${IMAGE}" .
+          echo "Working directory contents:"
+          ls -la
+          echo "If the app and Dockerfile are in ./sample-workflows, list that:"
+          ls -la ./sample-workflows || true
+          echo "Building ${IMAGE} using Dockerfile in ./sample-workflows (context ./sample-workflows)"
+          # build using the directory that contains Dockerfile and src/app
+          docker build -t "${IMAGE}" -f ./sample-workflows/Dockerfile ./sample-workflows
           # configure docker to use gcloud credential helper for gcr.io
           gcloud auth configure-docker --quiet
           echo "Pushing ${IMAGE}"
