@@ -56,30 +56,28 @@ jobs:
           echo "ingress-nginx installed; service status:"
           kubectl get svc -n ingress-nginx -o wide
 
-      - name: Build and push container image to GCR
+      - name: Build and push container image to Artifact Registry
         env:
-          GCLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-          IMAGE_REPO: gcr.io/${{ secrets.GCP_PROJECT_ID }}/sample-web-app
           IMAGE_TAG: ${{ github.sha }}
+          AR_LOCATION: us
+          AR_REPO: sample-workflows
+          IMAGE_REPO: us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/sample-web-app
         run: |
           IMAGE="${IMAGE_REPO}:${IMAGE_TAG}"
           echo "Working directory contents:"
           ls -la
-          echo "Show src directory:"
-          ls -la ./src || true
-          echo "Building ${IMAGE} using Dockerfile at repo root (context .)"
+          echo "Building ${IMAGE}"
           docker build -t "${IMAGE}" .
-           # configure docker to use gcloud credential helper for gcr.io
-           gcloud auth configure-docker --quiet
-           echo "Pushing ${IMAGE}"
-           docker push "${IMAGE}"
+          # configure docker to use gcloud credential helper for Artifact Registry
+          gcloud auth configure-docker ${AR_LOCATION}-docker.pkg.dev --quiet
+          echo "Pushing ${IMAGE}"
+          docker push "${IMAGE}"
 
       - name: Create imagePullSecret in cluster (regcred)
         run: |
-          # GOOGLE_APPLICATION_CREDENTIALS is set by setup-gcloud action; create/update a regcred using SA JSON
-          echo "Creating/updating regcred from service account JSON"
+          echo "Creating/updating regcred for Artifact Registry"
           kubectl create secret docker-registry regcred \
-            --docker-server=https://gcr.io \
+            --docker-server=https://${AR_LOCATION}-docker.pkg.dev \
             --docker-username=_json_key \
             --docker-password="$(cat ${GOOGLE_APPLICATION_CREDENTIALS})" \
             --docker-email=ci@example.com -n default --dry-run=client -o yaml | kubectl apply -f -
