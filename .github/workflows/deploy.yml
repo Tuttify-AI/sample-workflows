@@ -65,15 +65,14 @@ jobs:
           IMAGE="${IMAGE_REPO}:${IMAGE_TAG}"
           echo "Working directory contents:"
           ls -la
-          echo "If the app and Dockerfile are in ./sample-workflows, list that:"
-          ls -la ./sample-workflows || true
-          echo "Building ${IMAGE} using Dockerfile in ./sample-workflows (context ./sample-workflows)"
-          # build using the directory that contains Dockerfile and src/app
-          docker build -t "${IMAGE}" -f ./sample-workflows/Dockerfile ./sample-workflows
-          # configure docker to use gcloud credential helper for gcr.io
-          gcloud auth configure-docker --quiet
-          echo "Pushing ${IMAGE}"
-          docker push "${IMAGE}"
+          echo "Show src directory:"
+          ls -la ./src || true
+          echo "Building ${IMAGE} using Dockerfile at repo root (context .)"
+          docker build -t "${IMAGE}" .
+           # configure docker to use gcloud credential helper for gcr.io
+           gcloud auth configure-docker --quiet
+           echo "Pushing ${IMAGE}"
+           docker push "${IMAGE}"
 
       - name: Create imagePullSecret in cluster (regcred)
         run: |
