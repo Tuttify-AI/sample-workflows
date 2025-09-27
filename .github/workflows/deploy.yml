@@ -61,8 +61,9 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           AR_LOCATION: us
           AR_REPO: sample-workflows
-          IMAGE_REPO: us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/sample-web-app
         run: |
+          # compute IMAGE_REPO here so AR_REPO env is available
+          IMAGE_REPO="us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${AR_REPO}/sample-web-app"
           IMAGE="${IMAGE_REPO}:${IMAGE_TAG}"
           echo "Working directory contents:"
           ls -la
