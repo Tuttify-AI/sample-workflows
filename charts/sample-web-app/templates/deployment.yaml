@@ -15,10 +15,10 @@ spec:
         app: {{ .Release.Name }}-web-app
     spec:
       containers:
-        - name: web-app
+        - name: {{ include "sample-web-app.fullname" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - containerPort: {{ .Values.env.PORT | default "3000" | int }}
           env:
             - name: NODE_ENV
               value: {{ .Values.env.NODE_ENV | quote }}
