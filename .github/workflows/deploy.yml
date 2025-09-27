@@ -84,7 +84,9 @@ jobs:
 
       - name: Deploy to GKE
         run: |
-          IMAGE_REPO="gcr.io/${{ secrets.GCP_PROJECT_ID }}/sample-web-app"
+          AR_LOCATION="us"
+          AR_REPO="sample-workflows"
+          IMAGE_REPO="us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${AR_REPO}/sample-web-app"
           IMAGE_TAG="${{ github.sha }}"
           helm upgrade --install sample-web-app ./charts/sample-web-app \
             --namespace default \
