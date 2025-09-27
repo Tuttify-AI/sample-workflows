@@ -1,6 +1,9 @@
 image:
-  repository: nginx
-  tag: "stable"
+  repository: gcr.io/your-project-id/sample-web-app
+  tag: "latest"
+
+imagePullSecrets:
+  - name: regcred
 
 service:
   type: ClusterIP

@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0.2.0
+        uses: google-github-actions/setup-gcloud@v1.2.0
         with:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
@@ -27,6 +27,37 @@ jobs:
           location: ${{ secrets.GKE_REGION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+      - name: Build and push container image to GCR
+        env:
+          GCLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+          IMAGE_REPO: gcr.io/${{ secrets.GCP_PROJECT_ID }}/sample-web-app
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          IMAGE="${IMAGE_REPO}:${IMAGE_TAG}"
+          echo "Building ${IMAGE}"
+          docker build -t "${IMAGE}" .
+          # configure docker to use gcloud credential helper for gcr.io
+          gcloud auth configure-docker --quiet
+          echo "Pushing ${IMAGE}"
+          docker push "${IMAGE}"
+
+      - name: Create imagePullSecret in cluster (regcred)
+        run: |
+          # GOOGLE_APPLICATION_CREDENTIALS is set by setup-gcloud action; create/update a regcred using SA JSON
+          echo "Creating/updating regcred from service account JSON"
+          kubectl create secret docker-registry regcred \
+            --docker-server=https://gcr.io \
+            --docker-username=_json_key \
+            --docker-password="$(cat ${GOOGLE_APPLICATION_CREDENTIALS})" \
+            --docker-email=ci@example.com -n default --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Deploy to GKE
         run: |
-          helm upgrade --install sample-web-app ./charts/sample-web-app --namespace default --values ./charts/sample-web-app/values.yaml
+          IMAGE_REPO="gcr.io/${{ secrets.GCP_PROJECT_ID }}/sample-web-app"
+          IMAGE_TAG="${{ github.sha }}"
+          helm upgrade --install sample-web-app ./charts/sample-web-app \
+            --namespace default \
+            --values ./charts/sample-web-app/values.yaml \
+            --set image.repository="${IMAGE_REPO}" \
+            --set image.tag="${IMAGE_TAG}" \
+            --set imagePullSecrets[0].name=regcred
