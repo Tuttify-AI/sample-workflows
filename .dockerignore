@@ -1,8 +1,11 @@
+# avoid sending large or sensitive files to build context
+.git
+.github
+charts
 node_modules
-npm-debug.log
-Dockerfile
-.dockerignore
-.gitignore
-README.md
-charts/sample-web-app
-src/app/
+gha-kubeconfig-*
+key.json
+*.pem
+*.crt
+*.env
+.DS_Store
