@@ -27,6 +27,17 @@ jobs:
           location: ${{ secrets.GKE_REGION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+      - name: Install nginx ingress controller (if missing)
+        run: |
+          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx || true
+          helm repo update
+          helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+            --namespace ingress-nginx --create-namespace \
+            --set controller.service.type=LoadBalancer \
+            --wait --timeout 5m
+          echo "ingress-nginx installed; service status:"
+          kubectl get svc -n ingress-nginx -o wide
+
       - name: Build and push container image to GCR
         env:
           GCLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
