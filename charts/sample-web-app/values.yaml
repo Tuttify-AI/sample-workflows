@@ -1,6 +1,6 @@
 image:
-  repository: your-docker-repo/sample-web-app
-  tag: latest
+  repository: nginx
+  tag: "stable"
 
 service:
   type: ClusterIP
