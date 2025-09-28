@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-web-app
+  name: {{ .Release.Name }}
   labels:
-    app: {{ .Release.Name }}-web-app
+    app: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-web-app
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-web-app
+        app: {{ .Release.Name }}
     spec:
       imagePullSecrets:
         {{- if .Values.imagePullSecrets }}
