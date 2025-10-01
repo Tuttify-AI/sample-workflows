@@ -22,6 +22,11 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride -}}
 {{- else -}}
-{{- printf "%s-%s" (include "sample-web-app.name" .) .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- $name := include "sample-web-app.name" . -}}
+{{- if eq $name .Release.Name -}}
+{{- $name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" $name .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
